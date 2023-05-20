@@ -1,13 +1,12 @@
 package com.example.demoendterm.ui.home
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -17,11 +16,9 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.demoendterm.Data
-import com.example.demoendterm.PostAdapter
 import com.example.demoendterm.databinding.FragmentHomeBinding
-import com.squareup.picasso.Picasso
+import okhttp3.*
 import org.json.JSONArray
-
 import org.json.JSONObject
 
 class HomeFragment : Fragment() {
@@ -33,9 +30,6 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
 
     private var infoArrayList = ArrayList<Data>()
-
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,10 +48,11 @@ class HomeFragment : Fragment() {
 
         val button: Button = binding.button
         val fav: Button = binding.fav
-        val img: ImageView = binding.imageView
         val button2: Button = binding.button2
-        var sharedPreferences = requireContext().getSharedPreferences("post_prefs", Context.MODE_PRIVATE)
-        var inf =""
+        var sharedPreferences =
+            requireContext().getSharedPreferences("post_prefs", Context.MODE_PRIVATE)
+        var inf = ""
+        var author = ""
         button2.setOnClickListener {
             val editor = sharedPreferences.edit()
             editor.clear()
@@ -66,8 +61,8 @@ class HomeFragment : Fragment() {
         }
 
         fav.setOnClickListener {
-            if(inf.length>10){
-                val dt = Data(inf,0,0)
+            if (inf.length > 10) {
+                val dt = Data(inf, 0, 0)
                 infoArrayList.add(dt)
                 val editor = sharedPreferences.edit()
                 val jsonArray = JSONArray()
@@ -82,24 +77,67 @@ class HomeFragment : Fragment() {
                 editor.apply()
             }
 
+
         }
+        /* button.setOnClickListener {
+             val url = "https://dog.ceo/api/breeds/image/random"
+             val requestQueue = Volley.newRequestQueue(context)
+
+             val stringRequest = StringRequest(
+                 Request.Method.GET, url,
+                 { response ->
+                     val jsonObject = JSONObject(response)
+                     val name = jsonObject.getString("message")
+                     inf=name;
+                     Picasso.get().load(name).into(img)
+                     textView.text = inf
+                 },
+                 { textView.text = "Error" })
+
+             requestQueue.add(stringRequest)
+         }*/
+
         button.setOnClickListener {
-            val url = "https://dog.ceo/api/breeds/image/random"
+            val TAG = "MyApp"
+
+            val url = "https://andruxnet-random-famous-quotes.p.rapidapi.com/?cat=famous&count=1"
             val requestQueue = Volley.newRequestQueue(context)
 
-            val stringRequest = StringRequest(
+            val stringRequest = object : StringRequest(
                 Request.Method.GET, url,
-                { response ->
-                    val jsonObject = JSONObject(response)
-                    val name = jsonObject.getString("message")
-                    inf=name;
-                    Picasso.get().load(name).into(img)
-                    textView.text = inf
-                },
-                { textView.text = "Error" })
+                Response.Listener { response ->
+                    Log.i(TAG, "Received Response")
+                    val jsonArray = JSONArray(response)
+                    val jsonObject = jsonArray.getJSONObject(0)  // get first object
+                    val quote = jsonObject.getString("quote")
+                    val author2 = jsonObject.getString("author")
 
+                    inf = quote
+                    author = author2;
+                    // Make sure to adapt the above line to match the actual JSON structure
+                    Log.i(TAG, "Parsed quote: $inf")
+                    textView.text = inf
+
+                },
+                Response.ErrorListener {
+                    Log.e(TAG, "Error occurred during request")
+                    textView.text = "Error"
+                }
+            ) {
+                override fun getHeaders(): Map<String, String> {
+                    Log.i(TAG, "Setting headers")
+                    val headers = HashMap<String, String>()
+                    headers["X-RapidAPI-Key"] = "1a44405dbdmsh812f2c72237d450p1c41e7jsna0fe615403d0"
+                    return headers
+                }
+            }
+
+            Log.i(TAG, "Adding request to queue")
             requestQueue.add(stringRequest)
+
         }
+
+
 //        button.setOnClickListener {
 //
 //            val requestQueue = Volley.newRequestQueue(context)

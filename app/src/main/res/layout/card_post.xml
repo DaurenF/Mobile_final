@@ -11,13 +11,6 @@
     android:padding="8dp">
 
 
-    <ImageView
-        android:id="@+id/img"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_gravity="center_vertical"
-        android:layout_margin="10dp" />
-
     <TextView
         android:id="@+id/TvTitle"
         android:layout_width="match_parent"
@@ -39,7 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/teal_700"
-        android:text="Добавить в избранное" />
+        android:text="Удалить из избранных" />
 
 
 </LinearLayout>

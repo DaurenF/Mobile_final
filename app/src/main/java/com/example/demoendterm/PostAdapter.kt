@@ -32,16 +32,10 @@ class PostAdapter(val postModel: MutableList<Data>) : RecyclerView.Adapter<PostV
 class PostViewHolder(itemView: View, private val context: Context, private val adapter: PostAdapter) : RecyclerView.ViewHolder(itemView) {
 
     private val tvTitle: TextView = itemView.findViewById(R.id.TvTitle)
-    private val img: ImageView = itemView.findViewById(R.id.img)
     private val button: Button = itemView.findViewById(R.id.button)
 
     fun bindView(data: Data) {
         tvTitle.text = data.name
-
-        Picasso.get().load(data.name).into(img)
-
-
-        button.text = "Удалить из избранных"
 
         button.setOnClickListener {
             val infoArrayList = ArrayList<Data>()
